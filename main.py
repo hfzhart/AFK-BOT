@@ -4,7 +4,7 @@ import os
 
 intents = discord.Intents.default()
 intents.voice_states = True
-intents.message_content = True
+intents.message_content = True   # Это обязательно для префикс-команд
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -14,25 +14,16 @@ async def on_ready():
 
 @bot.command()
 async def join(ctx):
+    await ctx.send("Попытка подключения...")
     if not ctx.author.voice:
-        await ctx.send("❌ Ты не в голосовом канале!")
+        await ctx.send("❌ Ты должен быть в голосовом канале!")
         return
     
     channel = ctx.author.voice.channel
-    await ctx.send(f"Попытка зайти в: **{channel.name}**")
-    
     try:
         await channel.connect(self_deaf=True, self_mute=True)
-        await ctx.send("✅ **Успешно зашёл!**")
+        await ctx.send(f"✅ Успешно зашёл в **{channel.name}**")
     except Exception as e:
-        await ctx.send(f"❌ Ошибка: {e}")
-
-@bot.command()
-async def leave(ctx):
-    if ctx.voice_client:
-        await ctx.voice_client.disconnect()
-        await ctx.send("Вышел")
-    else:
-        await ctx.send("Я не в войсе")
+        await ctx.send(f"❌ Не смог зайти: {e}")
 
 bot.run(os.getenv("TOKEN"))
