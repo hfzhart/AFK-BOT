@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import os
-import asyncio
 
 intents = discord.Intents.default()
 intents.voice_states = True
@@ -11,7 +10,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"✅ Бот {bot.user} запущен на Railway!")
+    print(f"✅ Бот {bot.user} запущен!")
 
 @bot.command()
 async def join(ctx):
@@ -20,15 +19,11 @@ async def join(ctx):
         return
     
     channel = ctx.author.voice.channel
+    await ctx.send(f"Попытка зайти в: **{channel.name}**")
+    
     try:
         await channel.connect(self_deaf=True, self_mute=True)
-        await ctx.send(f"✅ Зашёл в **{channel.name}** и буду сидеть")
-        
-        # Простой keep-alive
-        while True:
-            await asyncio.sleep(300)  # каждые 5 минут проверка
-    except discord.ClientException:
-        await ctx.send("Я уже в войсе!")
+        await ctx.send("✅ **Успешно зашёл!**")
     except Exception as e:
         await ctx.send(f"❌ Ошибка: {e}")
 
@@ -36,7 +31,7 @@ async def join(ctx):
 async def leave(ctx):
     if ctx.voice_client:
         await ctx.voice_client.disconnect()
-        await ctx.send("👋 Вышел из войса")
+        await ctx.send("Вышел")
     else:
         await ctx.send("Я не в войсе")
 
